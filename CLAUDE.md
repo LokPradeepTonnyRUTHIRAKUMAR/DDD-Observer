@@ -32,6 +32,14 @@ This is a TypeScript DDD (Domain-Driven Design) exercise project. All runnable c
 
 The guiding principle is **"parse, don't validate"**: raw input is transformed into strongly-typed domain objects at the system boundary; inside the domain, types are trusted.
 
+### File organization
+
+1. Type definitions (ProductName, PriceNumber, ProductId, StockLevel, Quantity)
+2. Factory functions (createPrice, createQuantity, createStockLevel, createProduct)
+3. Entity definitions (Product type)
+4. Event types
+5. Observer setup & test code
+
 ### Key Design Constraints
 
 - No primitive obsession: raw `number`, `string`, etc. must be wrapped in branded/domain types before use.

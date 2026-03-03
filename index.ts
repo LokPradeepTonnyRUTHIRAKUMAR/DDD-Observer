@@ -4,38 +4,6 @@ type ProductName = "Shoes" | "Shirt" | "Pants"
 
 type PriceNumber = number & { readonly __brand: unique symbol }
 
-function createPrice(value: number): PriceNumber {
-	if (value < 0) {
-		throw new Error("Value must be positive")
-	}
-
-	return value as PriceNumber
-}
-
-// factory function
-function createProduct(
-	id: string,
-	name: ProductName,
-	price: PriceNumber,
-): Product {
-	if (name !== "Shoes" && name !== "Shirt" && name !== "Pants") {
-		throw new Error("Name must be Shoes, Shirt, or Pants")
-	}
-
-	if (!id) {
-		throw new Error("Id must be provided")
-	}
-
-	if (price < 0) {
-		throw new Error("Price must be positive")
-	}
-
-	return {
-		id: uuidv4() as ProductId,
-		name,
-		price,
-	}
-}
 type Product = {
 	id: ProductId
 	name: ProductName
@@ -72,6 +40,66 @@ type Quantity = number & { readonly __brand: unique symbol }
 
 type Observer = (event: DomainEvent) => void
 
+function createPrice(value: number): PriceNumber {
+	if (value < 0) {
+		throw new Error("Value must be positive")
+	}
+
+	return value as PriceNumber
+}
+
+function createQuantity(quantityValue: number): Quantity {
+	if (quantityValue < 0) {
+		throw new Error("Value must be positive")
+	}
+
+	return quantityValue as Quantity
+}
+
+function createStockLevel(levelValue: number): StockLevel {
+	if (levelValue < 0) {
+		throw new Error("Value must be positive")
+	}
+
+	return levelValue as StockLevel
+}
+
+function reduceStock(current: StockLevel, qty: Quantity): StockLevel {
+	if (current < qty) {
+		throw new Error("Not enough stock")
+	}
+	if (qty < 0) {
+		throw new Error("Quantity must be positive")
+	}
+
+	return (current - qty) as StockLevel
+}
+
+// factory function
+function createProduct(
+	id: string,
+	name: ProductName,
+	price: PriceNumber,
+): Product {
+	if (name !== "Shoes" && name !== "Shirt" && name !== "Pants") {
+		throw new Error("Name must be Shoes, Shirt, or Pants")
+	}
+
+	if (!id) {
+		throw new Error("Id must be provided")
+	}
+
+	if (price < 0) {
+		throw new Error("Price must be positive")
+	}
+
+	return {
+		id: id as ProductId,
+		name,
+		price,
+	}
+}
+
 const observers: Observer[] = []
 
 // first product (easy construction)
@@ -94,7 +122,7 @@ observers.push(sendEmailMock)
 observers.push(saveToDatabaseMock)
 
 try {
-	const product2 = createProduct(uuidv4(), "Shirt", createPrice(50))
+	const product2: Product = createProduct(uuidv4(), "Shirt", createPrice(50))
 	console.log(product2)
 	observers.forEach((observer) =>
 		observer({
@@ -111,3 +139,15 @@ try {
 		console.error("Unknown error")
 	}
 }
+
+const stockLevel: StockLevel = createStockLevel(10)
+const quantity: Quantity = createQuantity(2)
+
+const stockReducedEvent: StockReducedEvent = {
+	type: "StockReduced",
+	productId: product1.id,
+	newLevel: reduceStock(stockLevel, quantity),
+	quantity,
+}
+
+observers.forEach((observer) => observer(stockReducedEvent))

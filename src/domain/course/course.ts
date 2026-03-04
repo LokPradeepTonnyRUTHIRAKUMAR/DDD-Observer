@@ -1,9 +1,11 @@
 import { CourseId, CourseTitle } from "./types"
 import { Module } from "../module/module"
+import { Observer } from "../events/events"
 
 export type Course = {
-  id: CourseId
-  title: CourseTitle
-  modules: Module[]
-  completed: boolean
+  readonly id: CourseId
+  readonly title: CourseTitle
+  readonly modules: Module[]
+  readonly completed: boolean
+  readonly observer: Observer[]
 }

@@ -11,6 +11,12 @@ import { v4 as uuidv4 } from "uuid";
 // create a primitive obsessed type
 
 type Price = number & { readonly __brand: unique symbol };
+type Currency = "EUR";
+type Money = {
+  readonly amount: Price;
+  readonly currency: Currency;
+};
+
 type Email = string & { readonly __brand: unique symbol };
 
 // smart constructors
@@ -28,24 +34,31 @@ function createPrice(value: number): Price {
   return value as Price;
 }
 
+function createMoney(amount: number, currency: Currency): Money {
+  return {
+    amount: createPrice(amount),
+    currency,
+  };
+}
+
 type Project = {
   clientName: string;
   clientEmail: Email;
-  price: Price;
+  price: Money;
   immersive: boolean;
 };
 
 const project1: Project = {
   clientName: "Yann",
   clientEmail: createEmail("yan@mail.com"),
-  price: createPrice(1000),
+  price: createMoney(1000, "EUR"),
   immersive: true,
 };
 
 const project2: Project = {
   clientName: "Ilias",
   clientEmail: createEmail("ilias@mail.com"),
-  price: createPrice(2000),
+  price: createMoney(2000, "EUR"),
   immersive: true,
 };
 
@@ -60,7 +73,7 @@ try {
   const project3: Project = {
     clientName: "Karan",
     clientEmail: createEmail("karanihei.com"),
-    price: createPrice(-3000),
+    price: createMoney(-3000, "EUR"),
     immersive: true,
   };
 
